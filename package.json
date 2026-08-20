@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "test": "ts-node src/scraper/PageParser.test.ts && ts-node src/downloader/PdfDownloader.test.ts && ts-node src/storage/StateManager.test.ts"
   },
   "keywords": ["scraper", "typescript"],
   "license": "ISC",
