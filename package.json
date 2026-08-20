@@ -1,0 +1,23 @@
+{
+  "name": "prueba-magnar",
+  "version": "1.0.0",
+  "description": "Scraper en TypeScript para Jurisprudencia Nacional Sistematizada (Poder Judicial del Peru)",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": ["scraper", "typescript"],
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.0"
+  }
+}

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+
+data/*.jsonl
+data/*.json
+pdfs/*.pdf
+logs/*.log
+!data/.gitkeep
+!pdfs/.gitkeep
+!logs/.gitkeep
