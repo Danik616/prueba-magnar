@@ -3,11 +3,6 @@ import path from "path";
 import { DocumentRecord, DownloadTask, ScraperState } from "../types";
 import { config } from "../config";
 
-/**
- * Persiste el progreso a disco: un JSONL con un documento por línea (append-only)
- * y un JSON de estado (última página, ids ya vistos, descargas fallidas) para
- * poder retomar el scraping donde quedó si el proceso se corta.
- */
 export class StateManager {
   private state: ScraperState;
 
@@ -36,7 +31,6 @@ export class StateManager {
     return this.state.documentIds.includes(id);
   }
 
-  /** Descarta documentos ya vistos, tanto de una corrida anterior como duplicados dentro del mismo lote. */
   appendDocuments(documents: DocumentRecord[]) {
     const seenInBatch = new Set<string>();
     const fresh = documents.filter((d) => {

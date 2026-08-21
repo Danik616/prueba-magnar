@@ -6,7 +6,6 @@ import { StateManager } from "../storage/StateManager";
 import { config } from "../config";
 import { logger } from "../utils/logger";
 
-/** Orquestador secuencial: recorre toda la paginación, guarda checkpoints y descarga los PDFs. */
 export class JurisprudenciaScraper {
   private http = new HttpClient();
   private paginator = new ResultsPaginator(this.http);

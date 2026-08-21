@@ -1,10 +1,6 @@
 import assert from "assert";
 import { PageParser } from "./PageParser";
 
-// Fixtures que replican la estructura JSF/RichFaces real del sitio. No hay
-// HTML en vivo disponible sin VPN peruana, así que este es el chequeo de que
-// el parsing hace lo que dice hacer contra markup representativo.
-
 const inicioHtml = `
 <html><body>
 <form id="formBuscador" method="post">

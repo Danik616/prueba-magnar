@@ -4,6 +4,7 @@ dist/
 
 data/*.jsonl
 data/*.json
+data/.test/
 pdfs/*.pdf
 logs/*.log
 !data/.gitkeep

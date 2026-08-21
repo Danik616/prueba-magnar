@@ -7,7 +7,6 @@ import { config } from "../config";
 import { logger } from "../utils/logger";
 import { sanitizeFilename } from "../utils/delay";
 
-/** Descarga los PDFs de una lista de documentos, valida el header %PDF- y registra los fallos para reintentar. */
 export class PdfDownloader {
   constructor(private http: HttpClient, private state: StateManager) {}
 

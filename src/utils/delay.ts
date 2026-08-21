@@ -8,7 +8,7 @@ export function getBackoffDelay(attempt: number, baseMs: number, maxMs: number):
   return Math.min(exponential + jitter, maxMs);
 }
 
-/** Retry-After puede venir en segundos o como fecha HTTP (RFC 7231). */
+// Retry-After puede venir en segundos o como fecha (RFC 7231)
 export function parseRetryAfterMs(headerValue: string | undefined): number | null {
   if (!headerValue) return null;
 

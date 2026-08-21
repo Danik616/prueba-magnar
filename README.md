@@ -1,4 +1,4 @@
-# Prueba Magnar — Scraper Jurisprudencia PJ Perú
+# Prueba Magnar - Scraper Jurisprudencia PJ Perú
 
 Scraper en TypeScript, sin automatización de navegador (nada de Puppeteer /
 Playwright / Selenium), para el portal de
@@ -56,27 +56,27 @@ aserciones sobre deduplicación de documentos.
 | `RETRY_BASE_DELAY_MS` | `1000` | Base del backoff exponencial (`1 → 2 → 4 → 8 → 15s`). |
 | `RETRY_MAX_DELAY_MS` | `15000` | Techo del backoff. |
 | `MAX_PAGES` / `MAX_DOCUMENTS` | `0` | Corte para pruebas cortas. `0` = sin límite. |
-| `HTTP_PROXY_URL` | — | Proxy HTTP/HTTPS para salir con IP peruana, si no se usa VPN de sistema. |
+| `HTTP_PROXY_URL` | vacío | Proxy HTTP/HTTPS para salir con IP peruana, si no se usa VPN de sistema. |
 
 ## El problema que resuelve
 
-El buscador no es una API: es una vista JSF/Mojarra con RichFaces que arrastra
+El buscador no es una API, es una vista JSF/Mojarra con RichFaces que arrastra
 estado de servidor (`javax.faces.ViewState`) entre requests. Buscar y pasar de
-página son, ambos, un `POST` normal de formulario — no hay AJAX ni endpoints
-JSON. Concretamente:
+página son los dos un `POST` normal de formulario, nada de AJAX ni endpoints
+JSON.
 
 - El botón "Buscar" es un `<input type="image">` que dispara
-  `mojarra.jsfcljs(...)` por `onclick`; ese JS arma los parámetros ocultos que
-  identifican qué botón se apretó. `PageParser.extractSearchTrigger` los lee
+  `mojarra.jsfcljs(...)` por `onclick`. Ese JS arma los parámetros ocultos que
+  identifican qué botón se apretó, y `PageParser.extractSearchTrigger` los lee
   directo del HTML en vez de asumir ids autogenerados (`j_idtNN`), que cambian
   entre despliegues.
 - Avanzar de página es reenviar el formulario **completo** (no solo el número
   de página) contra un spinner de RichFaces + botón "IR". Si falta algún campo
-  que el servidor espera, la búsqueda se vacía sin ningún error visible — por
+  que el servidor espera, la búsqueda se vacía sin ningún error visible, por
   eso `extractFormSnapshot` toma una foto de todos los inputs/selects antes de
   tocar nada.
 - El sitio simula los placeholders de los inputs con JavaScript al cargar la
-  página; como `cheerio` nunca ejecuta ese script, el request tiene que mandar
+  página. Como `cheerio` nunca ejecuta ese script, el request tiene que mandar
   a mano el mismo texto que un navegador real terminaría enviando.
 
 Sobre esa navegación corre el resto: rate limiting, reintentos y persistencia.
@@ -85,13 +85,13 @@ Sobre esa navegación corre el resto: rate limiting, reintentos y persistencia.
 si el sitio responde 429/403/5xx, entra en backoff exponencial con jitter
 (respetando `Retry-After` si el servidor lo manda). Si se agotan los
 reintentos para un documento puntual, ese documento queda registrado como
-fallido y el scraper sigue con el siguiente — no corta toda la corrida por un
-solo PDF caído.
+fallido y el scraper sigue con el siguiente, no corta toda la corrida por un
+solo PDF caído. Ya lo vimos disparar en una corrida real contra el sitio.
 
 **Persistencia y resumibilidad.** Cada página scrapeada se apenda a
 `data/documents.jsonl` y se marca en `data/scraper-state.json`. Los
 documentos se deduplican por número de expediente, tanto dentro de un mismo
-lote como contra lo ya guardado de corridas anteriores — así que reanudar
+lote como contra lo ya guardado de corridas anteriores, así que reanudar
 después de un corte no genera entradas repetidas.
 
 **PDFs.** Se descargan a `pdfs/` con nombre `expediente_titulo_fecha.pdf`, y
@@ -118,8 +118,8 @@ src/
 
 Es intencionalmente secuencial: sin lanes paralelos, sin pool de proxies, sin
 circuit breaker. El desafío pide navegar toda la paginación, descargar PDFs y
-manejar 429 con retry — eso es lo que hay, sin capas extra que no aportan a
-ese objetivo. Si hace falta más velocidad o resiliencia frente a bloqueos más
+manejar 429 con retry, así que es lo que hay, sin capas extra que no aporten
+a eso. Si hace falta más velocidad o resiliencia frente a bloqueos más
 agresivos, se puede sumar después sobre esta base.
 
 ## Salidas

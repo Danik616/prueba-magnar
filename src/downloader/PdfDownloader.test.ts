@@ -8,10 +8,11 @@ import { StateManager } from "../storage/StateManager";
 import { config } from "../config";
 import { DocumentRecord } from "../types";
 
-// Servidor local que simula: un 429 seguido de un PDF válido, un endpoint
-// que nunca devuelve un PDF real (para probar la cola de reintentos), y un
-// 500 sostenido. Así se valida todo el pipeline de retry/backoff + descarga
-// + estado, sin depender de ningún sitio externo ni de VPN.
+// no pisar data/ real
+config.paths.documentsJsonl = "data/.test/documents.jsonl";
+config.paths.stateJson = "data/.test/scraper-state.json";
+config.paths.pdfsDir = "data/.test/pdfs";
+
 let attempts429 = 0;
 
 const server = http.createServer((req, res) => {
@@ -49,7 +50,6 @@ async function main() {
   await new Promise<void>((resolve) => server.listen(0, resolve));
   const port = (server.address() as any).port;
 
-  // limpiar estado de corridas previas del test
   for (const f of [config.paths.documentsJsonl, config.paths.stateJson]) {
     if (fs.existsSync(f)) fs.unlinkSync(f);
   }

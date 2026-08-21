@@ -3,18 +3,9 @@ import { DocumentRecord } from "../types";
 import { config } from "../config";
 import { logger } from "../utils/logger";
 
-// ============================================================
-// PageParser — parsing del sitio jurisprudencia.pj.gob.pe (RichFaces/Mojarra,
-// no una API REST). El botón "Buscar" es un <input type="image"> conectado a
-// mojarra.jsfcljs(...): hace un submit normal de formulario (no AJAX) agregando
-// parámetros ocultos que identifican qué botón disparó el envío. La paginación
-// es un spinner de RichFaces + botón "IR": saltar a la página N implica
-// reenviar TODO el estado del formulario con ese número.
-//
-// NOTA: esta lógica sale de inspeccionar manualmente el HTML del sitio, pero
-// no se pudo validar todavía en vivo (bloquea IPs fuera de Perú), así que
-// hay que confirmarla en cuanto tengamos acceso con VPN.
-// ============================================================
+// JSF/RichFaces, no hay api. "Buscar" es un input image con onclick a
+// mojarra.jsfcljs (submit normal, no ajax). paginar = reenviar todo el
+// form con el spinner + botón IR
 
 export interface PaginationInfo {
   spinnerField: string | null;
@@ -28,16 +19,12 @@ export class PageParser {
     const $ = cheerio.load(html);
     const viewState = $('input[name="javax.faces.ViewState"]').val() as string;
     if (!viewState) {
-      logger.warn("No se encontró el ViewState — la sesión pudo haber expirado o el sitio cambió");
+      logger.warn("No se encontró el ViewState, la sesión pudo haber expirado o el sitio cambió");
     }
     return viewState || "";
   }
 
-  /**
-   * Snapshot de todos los campos del formulario, para que el reenvío se
-   * parezca al de un navegador real. RichFaces puede descartar en silencio
-   * el estado de búsqueda si falta algún campo que espera recibir.
-   */
+  // si falta algún campo, RichFaces vacía la búsqueda sin avisar
   static extractFormSnapshot(html: string, formId: string): Record<string, string> {
     const $ = cheerio.load(html);
     const form = $(`form#${formId}`);
@@ -68,11 +55,7 @@ export class PageParser {
     return fields;
   }
 
-  /**
-   * Extrae los parámetros extra que mojarra.jsfcljs() agrega al disparar el
-   * botón "Buscar", leyéndolos del JS del onclick en vez de hardcodear ids
-   * autogenerados (j_idtNN) que cambian entre despliegues.
-   */
+  // saca los params de mojarra.jsfcljs() del onclick en vez de hardcodear ids tipo j_idtNN
   static extractSearchTrigger(html: string, formId: string): Record<string, string> | null {
     const unescaped = html.replace(/\\'/g, "'");
     const re = new RegExp(`mojarra\\.jsfcljs\\(document\\.getElementById\\('${formId}'\\),\\{([^}]*)\\}`, "g");
@@ -104,7 +87,6 @@ export class PageParser {
     };
   }
 
-  /** Cada resultado trae sus datos directo en el HTML: expediente, fecha, sala, sumilla, link al PDF. */
   static parseResultsPage(html: string, page: number): DocumentRecord[] {
     const $ = cheerio.load(html);
     const documents: DocumentRecord[] = [];

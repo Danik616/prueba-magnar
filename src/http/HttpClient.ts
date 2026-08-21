@@ -6,8 +6,7 @@ import { sleep, getBackoffDelay, parseRetryAfterMs } from "../utils/delay";
 
 const RETRYABLE_STATUS = new Set([429, 403, 500, 502, 503, 504]);
 
-// Set mínimo de headers de un navegador real — a propósito no se agregan
-// más cabeceras de "fingerprint" que nunca se confirmó que hicieran falta.
+// headers de navegador real
 const DEFAULT_HEADERS = {
   "User-Agent":
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
@@ -26,10 +25,6 @@ function parseProxy(url: string | null): AxiosRequestConfig["proxy"] {
   };
 }
 
-/**
- * Cliente HTTP con manejo de cookies de sesion (necesario para el ViewState de JSF),
- * retry con backoff exponencial ante 429/403/5xx, y proxy opcional.
- */
 export class HttpClient {
   private cookies = new Map<string, string>();
   private lastRequestAt = 0;

@@ -4,6 +4,10 @@ import { StateManager } from "./StateManager";
 import { config } from "../config";
 import { DocumentRecord } from "../types";
 
+// no pisar data/ real
+config.paths.documentsJsonl = "data/.test/documents.jsonl";
+config.paths.stateJson = "data/.test/scraper-state.json";
+
 function test(name: string, fn: () => void) {
   fn();
   console.log(`OK   ${name}`);
